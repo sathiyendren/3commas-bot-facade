@@ -14,6 +14,7 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+const cronHandler = require('./misc/cron');
 
 const app = express();
 
@@ -66,4 +67,6 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
+// run Cron job
+cronHandler();
 module.exports = app;
