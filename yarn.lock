@@ -4838,8 +4838,8 @@ nice-try@^1.0.4:
 
 node-cron@^3.0.0:
   version "3.0.0"
-  resolved "https://manhattan.jfrog.io/manhattan/api/npm/npm-repo/node-cron/-/node-cron-3.0.0.tgz#b33252803e430f9cd8590cf85738efa1497a9522"
-  integrity sha1-szJSgD5DD5zYWQz4VzjvoUl6lSI=
+  resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-3.0.0.tgz#b33252803e430f9cd8590cf85738efa1497a9522"
+  integrity sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA==
   dependencies:
     moment-timezone "^0.5.31"
 
