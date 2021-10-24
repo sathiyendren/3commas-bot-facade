@@ -95,10 +95,38 @@ const luncarCrashDataCall = async () => {
   }
 };
 
+const resetPasswordWithWrongToken = () =>
+  new Promise((resolve) => {
+    axios
+      .get('https://ci-3commas-bot-manager.herokuapp.com/v1/auth/verify-email?token=re')
+      .then((response) => {
+        const responseData = response.data;
+        logger.info(responseData);
+        resolve(true);
+      })
+      .catch((error) => {
+        logger.info(`Error: ${error.message}`);
+        resolve(true);
+      });
+  });
+
+const herokuKeepAliveCall = async () => {
+  try {
+    const isSuccess = await resetPasswordWithWrongToken();
+    logger.info(`herokuKeepAliveCall :: ${isSuccess}`);
+  } catch (error) {
+    logger.info('Heroku KeepAlive Call');
+  }
+};
+
 const cronHandler = () => {
   cron.schedule('* * * * *', () => {
     logger.info('running a task every minute');
     luncarCrashDataCall();
+  });
+  cron.schedule('*/15 * * * *', () => {
+    logger.info('running a task every 15 minute');
+    herokuKeepAliveCall();
   });
 };
 
