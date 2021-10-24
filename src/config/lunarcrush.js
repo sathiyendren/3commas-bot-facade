@@ -5,7 +5,7 @@ const tradingViewCustomSignalConfig = {
 };
 
 const lunarCrashConfig = {
-  sync_item_count: 25,
+  sync_item_count: 30,
 };
 
 module.exports = {
