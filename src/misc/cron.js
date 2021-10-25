@@ -192,9 +192,9 @@ const luncarCrashDataCall = async () => {
     const lunarCrashToken = await getLunarCrashToken();
     logger.info(`Lunarcrash Generated Token :: ${lunarCrashToken}`);
     if (lunarCrashToken) {
-      startBotsUsingLunarCrashAltRank(lunarCrashToken);
+      // startBotsUsingLunarCrashAltRank(lunarCrashToken);
       // startMultiPairBotsUsingLunarCrashAltRank(lunarCrashToken);
-      // startMultiPairBotsUsingLunarCrashGalaxy10Rank(lunarCrashToken);
+      startMultiPairBotsUsingLunarCrashGalaxy10Rank(lunarCrashToken);
     }
   } catch (error) {
     logger.info(error);
@@ -226,7 +226,7 @@ const herokuKeepAliveCall = async () => {
 };
 
 const cronHandler = () => {
-  cron.schedule('* * * * *', () => {
+  cron.schedule('*/5 * * * *', () => {
     logger.info('running a task every minute');
     luncarCrashDataCall();
   });
