@@ -95,10 +95,10 @@ const luncarCrashDataCall = async () => {
   }
 };
 
-const resetPasswordWithWrongToken = () =>
+const checkHealth = () =>
   new Promise((resolve) => {
     axios
-      .get('https://ci-3commas-bot-manager.herokuapp.com/v1/auth/verify-email?token=re')
+      .get('https://ci-3commas-bot-manager.herokuapp.com/v1/misc/ping')
       .then((response) => {
         const responseData = response.data;
         logger.info(responseData);
@@ -112,7 +112,7 @@ const resetPasswordWithWrongToken = () =>
 
 const herokuKeepAliveCall = async () => {
   try {
-    const isSuccess = await resetPasswordWithWrongToken();
+    const isSuccess = await checkHealth();
     logger.info(`herokuKeepAliveCall :: ${isSuccess}`);
   } catch (error) {
     logger.info('Heroku KeepAlive Call');
