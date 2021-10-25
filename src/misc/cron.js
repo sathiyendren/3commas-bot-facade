@@ -103,6 +103,7 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins) => {
     }
   }
   botDetails.pairs = final3CommaCoinPairs;
+  logger.info(`final3CommaCoinPairs :: ${final3CommaCoinPairs}`);
   const params = {
     name: botDetails.name,
     pairs: final3CommaCoinPairs,
@@ -122,35 +123,78 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins) => {
   logger.info(` ** Bot Id :: ${botId} is udpated with Lunar AltRank. **`);
 };
 
+const getLunarCrashAltRankCoins = (lunarCrashToken) =>
+  new Promise((resolve) => {
+    getLunarCrashCoinData(lunarCrashToken).then((lunarCrashCoinData) => {
+      let lunarCrashCoinFinalData = [];
+      if (lunarCrashCoinData) {
+        const syncItemCount = lunarCrashConfig.sync_item_count;
+        lunarCrashCoinFinalData = lunarCrashCoinData.slice(0, syncItemCount);
+      }
+      resolve(lunarCrashCoinFinalData);
+    });
+  });
+
+const getLunarCrashGalaxy10RankCoins = (lunarCrashToken) =>
+  new Promise((resolve) => {
+    getLunarCrashCoinData(lunarCrashToken).then((lunarCrashCoinData) => {
+      lunarCrashCoinData.sort((a, b) => parseFloat(b.gs) - parseFloat(a.gs));
+      let lunarCrashCoinFinalData = [];
+      if (lunarCrashCoinData) {
+        const syncItemCount = lunarCrashConfig.sync_item_count;
+        lunarCrashCoinFinalData = lunarCrashCoinData.slice(0, syncItemCount);
+      }
+      resolve(lunarCrashCoinFinalData);
+    });
+  });
+
+const startBotsUsingLunarCrashAltRank = async (lunarCrashToken) => {
+  const lunarCrashAltRankCoins = await getLunarCrashAltRankCoins(lunarCrashToken);
+  const lunarCrashCoinFinalDataLength = lunarCrashAltRankCoins.length;
+  logger.info(`-------------- Trade Summary - START --------------`);
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < lunarCrashCoinFinalDataLength; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const bot3CommasData = await get3CommasBotForPair(lunarCrashAltRankCoins[i].s);
+    if (bot3CommasData) {
+      // eslint-disable-next-line no-await-in-loop
+      const isBotStarted = await start3CommasBotDeal(bot3CommasData.name);
+      if (isBotStarted) {
+        logger.info(`Started Deal for Trade Pair - ${bot3CommasData.pair} using Bot id ${bot3CommasData.name}`);
+      }
+    }
+  }
+  logger.info(`-------------- Trade Summary - END --------------`);
+};
+
+const startMultiPairBotsUsingLunarCrashAltRank = async (lunarCrashToken) => {
+  try {
+    const botId = 6551158;
+    const lunarCrashAltRankCoins = await getLunarCrashAltRankCoins(lunarCrashToken);
+    update3CommasBotPairs(botId, lunarCrashAltRankCoins);
+  } catch (error) {
+    logger.info(error);
+  }
+};
+
+const startMultiPairBotsUsingLunarCrashGalaxy10Rank = async (lunarCrashToken) => {
+  try {
+    const botId = 6551158;
+    const lunarCrashGalaxy10RankCoins = await getLunarCrashGalaxy10RankCoins(lunarCrashToken);
+    update3CommasBotPairs(botId, lunarCrashGalaxy10RankCoins);
+  } catch (error) {
+    logger.info(error);
+  }
+};
+
 const luncarCrashDataCall = async () => {
   try {
     const lunarCrashToken = await getLunarCrashToken();
+    logger.info(`Lunarcrash Generated Token :: ${lunarCrashToken}`);
     if (lunarCrashToken) {
-      logger.info(`Lunarcrash Token :: ${lunarCrashToken}`);
-      const lunarCrashCoinData = await getLunarCrashCoinData(lunarCrashToken);
-      if (lunarCrashCoinData) {
-        const syncItemCount = lunarCrashConfig.sync_item_count;
-        const lunarCrashCoinFinalData = lunarCrashCoinData.slice(0, syncItemCount);
-        const lunarCrashCoinFinalDataLength = lunarCrashCoinFinalData.length;
-        logger.info(`-------------- Trade Summary - START --------------`);
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < lunarCrashCoinFinalDataLength; i++) {
-          // eslint-disable-next-line no-await-in-loop
-          const bot3CommasData = await get3CommasBotForPair(lunarCrashCoinFinalData[i].s);
-          if (bot3CommasData) {
-            // eslint-disable-next-line no-await-in-loop
-            const isBotStarted = await start3CommasBotDeal(bot3CommasData.name);
-            if (isBotStarted) {
-              logger.info(`Started Deal for Trade Pair - ${bot3CommasData.pair} using Bot id ${bot3CommasData.name}`);
-            }
-          }
-        }
-        logger.info(`-------------- Trade Summary - END --------------`);
-
-        // update 3Commas bot pair
-        const botId = 6551158;
-        update3CommasBotPairs(botId, lunarCrashCoinFinalData);
-      }
+      startBotsUsingLunarCrashAltRank(lunarCrashToken);
+      // startMultiPairBotsUsingLunarCrashAltRank(lunarCrashToken);
+      // startMultiPairBotsUsingLunarCrashGalaxy10Rank(lunarCrashToken);
     }
   } catch (error) {
     logger.info(error);
