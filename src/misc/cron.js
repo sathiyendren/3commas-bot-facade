@@ -227,7 +227,7 @@ const herokuKeepAliveCall = async () => {
 };
 
 const cronHandler = () => {
-  cron.schedule('*/5 * * * *', () => {
+  cron.schedule('* * * * *', () => {
     logger.info('running a task every minute');
     luncarCrashDataCall();
   });
