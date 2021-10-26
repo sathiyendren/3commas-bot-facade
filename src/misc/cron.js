@@ -117,7 +117,7 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins) => {
     safety_order_step_percentage: botDetails.safety_order_step_percentage,
     take_profit_type: botDetails.take_profit_type,
     strategy_list: botDetails.strategy_list,
-    max_active_deals: botDetails.max_active_deals,
+    max_active_deals: lunarCrashConfig.max_active_deals,
     bot_id: botId,
   };
   await api3Commas.customRequest('PATCH', 1, `/bots/${botId}/update`, params);
