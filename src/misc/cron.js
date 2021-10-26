@@ -7,14 +7,14 @@ const config = require('../config/config');
 const { tradingViewCustomSignalConfig, lunarCrashConfig, listOf3CommasUSDTPair } = require('../config/3commas');
 const { botService } = require('../services');
 
-const get3CommasAPI = () => {
+const get3CommasAPI = (mode) => {
   const apiKey = config.threeCommas.api.key;
   const apiSecret = config.threeCommas.api.secret;
   const api = new API({
     key: apiKey, // Optional if only query endpoints with no security requirement
     secrets: apiSecret, // Optional
     timeout: 60000, // Optional, in ms, default to 30000
-    forcedMode: 'real',
+    forcedMode: mode || 'real', // 'real' | 'paper'
     errorHandler: (response, reject) => {
       // Optional, Custom handler for 3Commas error
       // eslint-disable-next-line camelcase
@@ -26,6 +26,21 @@ const get3CommasAPI = () => {
   });
   return api;
 };
+
+const checkHealth = () =>
+  new Promise((resolve) => {
+    axios
+      .get('https://ci-3commas-bot-manager.herokuapp.com/v1/misc/ping')
+      .then((response) => {
+        const responseData = response.data;
+        logger.info(responseData);
+        resolve(true);
+      })
+      .catch((error) => {
+        logger.info(`Error: ${error.message}`);
+        resolve(true);
+      });
+  });
 
 const getLunarCrashToken = () =>
   new Promise((resolve) => {
@@ -88,8 +103,8 @@ const get3CommasBotForPair = (pair) =>
     resolve(bot);
   });
 
-const update3CommasBotPairs = async (botId, lunarCrashCoins) => {
-  const api3Commas = get3CommasAPI();
+const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
+  const api3Commas = get3CommasAPI(acMode);
   const botDetails = await api3Commas.getBot(botId);
   const lunarCrashCoinsLength = lunarCrashCoins.length;
   const final3CommaCoinPairs = [];
@@ -121,7 +136,6 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins) => {
     bot_id: botId,
   };
   await api3Commas.customRequest('PATCH', 1, `/bots/${botId}/update`, params);
-  logger.info(` ** Bot Id :: ${botId} is udpated with Lunar AltRank. **`);
 };
 
 const getLunarCrashAltRankCoins = (lunarCrashToken) =>
@@ -168,54 +182,40 @@ const startBotsUsingLunarCrashAltRank = async (lunarCrashToken) => {
   logger.info(`-------------- Trade Summary - END --------------`);
 };
 
-const startMultiPairBotsUsingLunarCrashAltRank = async (lunarCrashToken) => {
+const startMultiPairBotsUsingLunarCrashAltRank = async (botId, lunarCrashToken, acMode) => {
   try {
-    const botId = 6551158;
     const lunarCrashAltRankCoins = await getLunarCrashAltRankCoins(lunarCrashToken);
-    update3CommasBotPairs(botId, lunarCrashAltRankCoins);
+    update3CommasBotPairs(botId, lunarCrashAltRankCoins, acMode);
+    logger.info(` ** Bot Id :: ${botId} is udpated with Lunar AltRank. **`);
   } catch (error) {
     logger.info(error);
   }
 };
 
-const startMultiPairBotsUsingLunarCrashGalaxy10Rank = async (lunarCrashToken) => {
+const startMultiPairBotsUsingLunarCrashGalaxy10Rank = async (botId, lunarCrashToken, acMode) => {
   try {
-    const botId = 6551158;
     const lunarCrashGalaxy10RankCoins = await getLunarCrashGalaxy10RankCoins(lunarCrashToken);
-    update3CommasBotPairs(botId, lunarCrashGalaxy10RankCoins);
+    update3CommasBotPairs(botId, lunarCrashGalaxy10RankCoins, acMode);
+    logger.info(` ** Bot Id :: ${botId} is udpated with Galaxy Score. **`);
   } catch (error) {
     logger.info(error);
   }
 };
 
-const luncarCrashDataCall = async () => {
+const lunarCrashDataCall = async () => {
   try {
     const lunarCrashToken = await getLunarCrashToken();
     logger.info(`Lunarcrash Generated Token :: ${lunarCrashToken}`);
     if (lunarCrashToken) {
       // startBotsUsingLunarCrashAltRank(lunarCrashToken);
-      // startMultiPairBotsUsingLunarCrashAltRank(lunarCrashToken);
-      startMultiPairBotsUsingLunarCrashGalaxy10Rank(lunarCrashToken);
+      // startMultiPairBotsUsingLunarCrashAltRank(6551158, lunarCrashToken);
+      startMultiPairBotsUsingLunarCrashGalaxy10Rank(6551158, lunarCrashToken, 'real');
+      startMultiPairBotsUsingLunarCrashGalaxy10Rank(6591241, lunarCrashToken, 'paper');
     }
   } catch (error) {
     logger.info(error);
   }
 };
-
-const checkHealth = () =>
-  new Promise((resolve) => {
-    axios
-      .get('https://ci-3commas-bot-manager.herokuapp.com/v1/misc/ping')
-      .then((response) => {
-        const responseData = response.data;
-        logger.info(responseData);
-        resolve(true);
-      })
-      .catch((error) => {
-        logger.info(`Error: ${error.message}`);
-        resolve(true);
-      });
-  });
 
 const herokuKeepAliveCall = async () => {
   try {
@@ -227,9 +227,9 @@ const herokuKeepAliveCall = async () => {
 };
 
 const cronHandler = () => {
-  cron.schedule('* * * * *', () => {
+  cron.schedule('*/5 * * * *', () => {
     logger.info('running a task every minute');
-    luncarCrashDataCall();
+    lunarCrashDataCall();
   });
   cron.schedule('*/15 * * * *', () => {
     logger.info('running a task every 15 minute');
