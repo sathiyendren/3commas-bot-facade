@@ -6,6 +6,7 @@ const tradingViewCustomSignalConfig = {
 
 const lunarCrashConfig = {
   sync_item_count: 30,
+  max_active_deals: 10,
 };
 
 const listOf3CommasUSDTPair = [
