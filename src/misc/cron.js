@@ -126,18 +126,18 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
 
   let botPairs = lunarCrash3CommaCoinPairs;
   let botMaxActiveDeals = lunarCrash3CommaCoinPairs.length;
-  if (acMode === 'paper') {
-    const activeDeals = botDetails.active_deals;
-    const activeDealPairs = [];
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < activeDeals.length; i++) {
-      const activeDealPair = activeDeals[i].pair;
-      activeDealPairs.push(activeDealPair);
-    }
-
-    botPairs = lodash.union(activeDealPairs, lunarCrash3CommaCoinPairs);
-    botMaxActiveDeals = botPairs.length;
+  // if (acMode === 'paper') {
+  const activeDeals = botDetails.active_deals;
+  const activeDealPairs = [];
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < activeDeals.length; i++) {
+    const activeDealPair = activeDeals[i].pair;
+    activeDealPairs.push(activeDealPair);
   }
+
+  botPairs = lodash.union(activeDealPairs, lunarCrash3CommaCoinPairs);
+  botMaxActiveDeals = botPairs.length;
+  // }
   const params = {
     name: botDetails.name,
     pairs: botPairs,
@@ -231,7 +231,6 @@ const startMultiPairBotsUsingLunarCrashGalaxyScore = async (botId, lunarCrashTok
     logger.info(` Bot Pairs :: ${botInfo.botPairs}`);
     logger.info(` Bot Max Active Deals :: ${botInfo.botMaxActiveDeals}`);
     logger.info(`----------------------- END -------------------------`);
-
   } catch (error) {
     logger.info(error);
   }
