@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const axios = require('axios');
+const lodash = require('lodash');
 const { API } = require('3commas-typescript'); // https://www.npmjs.com/package/3commas-typescript
 const logger = require('../config/logger');
 const config = require('../config/config');
@@ -106,22 +107,40 @@ const get3CommasBotForPair = (pair) =>
 const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
   const api3Commas = get3CommasAPI(acMode);
   const botDetails = await api3Commas.getBot(botId);
+  const maxActiveDeals = lunarCrashConfig.max_active_deals;
+
   const lunarCrashCoinsLength = lunarCrashCoins.length;
-  const final3CommaCoinPairs = [];
+  let lunarCrash3CommaCoinPairs = [];
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < lunarCrashCoinsLength; i++) {
     const lunarCrashCoinPair = lunarCrashCoins[i].s;
     const actualCoinPairName = `USDT_${lunarCrashCoinPair}`;
     const listOf3CommasUSDTPairs = listOf3CommasUSDTPair;
     if (listOf3CommasUSDTPairs.includes(actualCoinPairName)) {
-      final3CommaCoinPairs.push(actualCoinPairName);
+      lunarCrash3CommaCoinPairs.push(actualCoinPairName);
     }
   }
-  botDetails.pairs = final3CommaCoinPairs;
-  logger.info(`final3CommaCoinPairs :: ${final3CommaCoinPairs}`);
+  if (lunarCrash3CommaCoinPairs.length > lunarCrashConfig.max_active_deals) {
+    lunarCrash3CommaCoinPairs = lunarCrash3CommaCoinPairs.slice(0, maxActiveDeals);
+  }
+
+  let botPairs = lunarCrash3CommaCoinPairs;
+  let botMaxActiveDeals = lunarCrash3CommaCoinPairs.length;
+  if (acMode === 'paper') {
+    const activeDeals = botDetails.active_deals;
+    const activeDealPairs = [];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < activeDeals.length; i++) {
+      const activeDealPair = activeDeals[i].pair;
+      activeDealPairs.push(activeDealPair);
+    }
+
+    botPairs = lodash.union(activeDealPairs, lunarCrash3CommaCoinPairs);
+    botMaxActiveDeals = botPairs.length;
+  }
   const params = {
     name: botDetails.name,
-    pairs: final3CommaCoinPairs,
+    pairs: botPairs,
     base_order_volume: botDetails.base_order_volume,
     take_profit: botDetails.take_profit,
     safety_order_volume: botDetails.safety_order_volume,
@@ -132,10 +151,11 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
     safety_order_step_percentage: botDetails.safety_order_step_percentage,
     take_profit_type: botDetails.take_profit_type,
     strategy_list: botDetails.strategy_list,
-    max_active_deals: lunarCrashConfig.max_active_deals,
+    max_active_deals: botMaxActiveDeals,
     bot_id: botId,
   };
   await api3Commas.customRequest('PATCH', 1, `/bots/${botId}/update`, params);
+  return { botPairs, botMaxActiveDeals };
 };
 
 const getLunarCrashAltRankCoins = (lunarCrashToken) =>
@@ -150,7 +170,7 @@ const getLunarCrashAltRankCoins = (lunarCrashToken) =>
     });
   });
 
-const getLunarCrashGalaxy10RankCoins = (lunarCrashToken) =>
+const getLunarCrashGalaxyScoreCoins = (lunarCrashToken) =>
   new Promise((resolve) => {
     getLunarCrashCoinData(lunarCrashToken).then((lunarCrashCoinData) => {
       lunarCrashCoinData.sort((a, b) => parseFloat(b.gs) - parseFloat(a.gs));
@@ -185,18 +205,33 @@ const startBotsUsingLunarCrashAltRank = async (lunarCrashToken) => {
 const startMultiPairBotsUsingLunarCrashAltRank = async (botId, lunarCrashToken, acMode) => {
   try {
     const lunarCrashAltRankCoins = await getLunarCrashAltRankCoins(lunarCrashToken);
-    update3CommasBotPairs(botId, lunarCrashAltRankCoins, acMode);
-    logger.info(` ** Bot Id :: ${botId} is udpated with Lunar AltRank. **`);
+    const botInfo = await update3CommasBotPairs(botId, lunarCrashAltRankCoins, acMode);
+    logger.info(`--`);
+    logger.info(`--`);
+    logger.info(`--`);
+    logger.info(`----------------------- START -------------------------`);
+    logger.info(` Bot Id :: ${botId} is udpated with LunarCrash AltRank.`);
+    logger.info(` Bot Pairs :: ${botInfo.botPairs}`);
+    logger.info(` Bot Max Active Deals :: ${botInfo.botMaxActiveDeals}`);
+    logger.info(`----------------------- END -------------------------`);
   } catch (error) {
     logger.info(error);
   }
 };
 
-const startMultiPairBotsUsingLunarCrashGalaxy10Rank = async (botId, lunarCrashToken, acMode) => {
+const startMultiPairBotsUsingLunarCrashGalaxyScore = async (botId, lunarCrashToken, acMode) => {
   try {
-    const lunarCrashGalaxy10RankCoins = await getLunarCrashGalaxy10RankCoins(lunarCrashToken);
-    update3CommasBotPairs(botId, lunarCrashGalaxy10RankCoins, acMode);
-    logger.info(` ** Bot Id :: ${botId} is udpated with Galaxy Score. **`);
+    const lunarCrashGalaxyScoreCoins = await getLunarCrashGalaxyScoreCoins(lunarCrashToken);
+    const botInfo = await update3CommasBotPairs(botId, lunarCrashGalaxyScoreCoins, acMode);
+    logger.info(`--`);
+    logger.info(`--`);
+    logger.info(`--`);
+    logger.info(`----------------------- START -------------------------`);
+    logger.info(` Bot Id :: ${botId} is udpated with LunarCrash GalaxyScore.`);
+    logger.info(` Bot Pairs :: ${botInfo.botPairs}`);
+    logger.info(` Bot Max Active Deals :: ${botInfo.botMaxActiveDeals}`);
+    logger.info(`----------------------- END -------------------------`);
+
   } catch (error) {
     logger.info(error);
   }
@@ -209,8 +244,8 @@ const lunarCrashDataCall = async () => {
     if (lunarCrashToken) {
       // startBotsUsingLunarCrashAltRank(lunarCrashToken);
       // startMultiPairBotsUsingLunarCrashAltRank(6551158, lunarCrashToken);
-      startMultiPairBotsUsingLunarCrashGalaxy10Rank(6551158, lunarCrashToken, 'real');
-      startMultiPairBotsUsingLunarCrashGalaxy10Rank(6591241, lunarCrashToken, 'paper');
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real');
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6591241, lunarCrashToken, 'paper');
     }
   } catch (error) {
     logger.info(error);
@@ -227,7 +262,7 @@ const herokuKeepAliveCall = async () => {
 };
 
 const cronHandler = () => {
-  cron.schedule('*/5 * * * *', () => {
+  cron.schedule('* * * * *', () => {
     logger.info('running a task every minute');
     lunarCrashDataCall();
   });
