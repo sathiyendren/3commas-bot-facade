@@ -244,6 +244,7 @@ const lunarCrashDataCall = async () => {
       // startBotsUsingLunarCrashAltRank(lunarCrashToken);
       // startMultiPairBotsUsingLunarCrashAltRank(6551158, lunarCrashToken);
       startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real');
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6714616, lunarCrashToken, 'real');
       startMultiPairBotsUsingLunarCrashGalaxyScore(6591241, lunarCrashToken, 'paper');
     }
   } catch (error) {
