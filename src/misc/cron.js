@@ -108,7 +108,7 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
   const api3Commas = get3CommasAPI(acMode);
   const botDetails = await api3Commas.getBot(botId);
   const maxActiveDeals = lunarCrashConfig.max_active_deals;
-
+  const syncItemCount = lunarCrashConfig.sync_item_count;
   const lunarCrashCoinsLength = lunarCrashCoins.length;
   let lunarCrash3CommaCoinPairs = [];
   // eslint-disable-next-line no-plusplus
@@ -121,11 +121,9 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
     }
   }
   if (lunarCrash3CommaCoinPairs.length > lunarCrashConfig.max_active_deals) {
-    lunarCrash3CommaCoinPairs = lunarCrash3CommaCoinPairs.slice(0, maxActiveDeals);
+    lunarCrash3CommaCoinPairs = lunarCrash3CommaCoinPairs.slice(0, syncItemCount);
   }
 
-  let botPairs = lunarCrash3CommaCoinPairs;
-  let botMaxActiveDeals = lunarCrash3CommaCoinPairs.length;
   // if (acMode === 'paper') {
   const activeDeals = botDetails.active_deals;
   const activeDealPairs = [];
@@ -135,8 +133,12 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
     activeDealPairs.push(activeDealPair);
   }
 
-  botPairs = lodash.union(activeDealPairs, lunarCrash3CommaCoinPairs);
-  botMaxActiveDeals = botPairs.length;
+  let totalBotPairs = lodash.union(lunarCrash3CommaCoinPairs, activeDealPairs);
+  if (totalBotPairs.length > maxActiveDeals) {
+    totalBotPairs = totalBotPairs.slice(0, maxActiveDeals);
+  }
+  const botPairs = totalBotPairs;
+  const botMaxActiveDeals = botPairs.length;
   // }
   const params = {
     name: botDetails.name,
@@ -243,9 +245,9 @@ const lunarCrashDataCall = async () => {
     if (lunarCrashToken) {
       // startBotsUsingLunarCrashAltRank(lunarCrashToken);
       // startMultiPairBotsUsingLunarCrashAltRank(6551158, lunarCrashToken);
-      startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real');
-      startMultiPairBotsUsingLunarCrashGalaxyScore(6714616, lunarCrashToken, 'real');
-      startMultiPairBotsUsingLunarCrashGalaxyScore(6591241, lunarCrashToken, 'paper');
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real'); // Bull Bot
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6714616, lunarCrashToken, 'real'); // Safira Bot
+      // startMultiPairBotsUsingLunarCrashGalaxyScore(6591241, lunarCrashToken, 'paper');
     }
   } catch (error) {
     logger.info(error);
