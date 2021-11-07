@@ -137,8 +137,8 @@ const update3CommasBotPairs = async (botId, lunarCrashCoins, acMode) => {
   if (totalBotPairs.length > maxActiveDeals) {
     totalBotPairs = totalBotPairs.slice(0, maxActiveDeals);
   }
-  const botPairs = totalBotPairs;
-  const botMaxActiveDeals = botPairs.length;
+  const botPairs = lunarCrash3CommaCoinPairs; // totalBotPairs;
+  const botMaxActiveDeals = lunarCrash3CommaCoinPairs.length; // botPairs.length;
   // }
   const params = {
     name: botDetails.name,
