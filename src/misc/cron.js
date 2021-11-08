@@ -302,7 +302,7 @@ const updateBotsUsingLunarCrashGalaxyScore = (api3Commas, bot, lunarCrashGSCheck
         logger.info(`*** Not isReadyToBuy - ${bot.pair} using Bot id ${bot.name}`);
         // eslint-disable-next-line no-await-in-loop
         const botDetails = await api3Commas.getBot(bot.name);
-        logger.info(` active_deals_count :: ${botDetails.active_deals_count}`);
+        // logger.info(` active_deals_count :: ${botDetails.active_deals_count}`);
 
         const params = {
           name: botDetails.name,
@@ -346,7 +346,7 @@ const startAndStopBotsUsingLunarCrashGalaxyScore = async (acMode, lunarCrashToke
     const bots = await getAllBots();
     const botsLength = bots.length;
 
-    const syncItemCount = lunarCrashConfig.sync_item_count;
+    const syncItemCount = lunarCrashConfig.min_sync_item_count;
     const lunarCrashCoinsLength = lunarCrashGalaxyScoreCoins.length;
     let lunarCrash3CommaCoinPairs = [];
     // eslint-disable-next-line no-plusplus

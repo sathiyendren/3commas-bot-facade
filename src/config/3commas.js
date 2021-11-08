@@ -19,7 +19,7 @@ const tradingViewCustomStopBotSignalConfig = {
 };
 
 const lunarCrashConfig = {
-  sync_item_count: 30,
+  sync_item_count: 20,
   max_active_deals: 50,
   min_sync_item_count: 10,
 };
