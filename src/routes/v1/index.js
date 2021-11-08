@@ -3,6 +3,8 @@ const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const miscRoute = require('./misc.route');
+const botRoute = require('./bot.route');
+
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -19,6 +21,10 @@ const defaultRoutes = [
   {
     path: '/misc',
     route: miscRoute,
+  },
+  {
+    path: '/bot',
+    route: botRoute,
   },
 ];
 

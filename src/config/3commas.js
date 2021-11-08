@@ -1,4 +1,18 @@
-const tradingViewCustomSignalConfig = {
+const tradingViewCustomStartDealSignalConfig = {
+  message_type: 'bot',
+  email_token: 'f72de277-a027-42fd-adb7-8e62d8047887',
+  delay_seconds: 0,
+};
+
+const tradingViewCustomStartBotSignalConfig = {
+  action: 'start_bot',
+  message_type: 'bot',
+  email_token: 'f72de277-a027-42fd-adb7-8e62d8047887',
+  delay_seconds: 0,
+};
+
+const tradingViewCustomStopBotSignalConfig = {
+  action: 'start_bot',
   message_type: 'bot',
   email_token: 'f72de277-a027-42fd-adb7-8e62d8047887',
   delay_seconds: 0,
@@ -20,6 +34,7 @@ const listOf3CommasUSDTPair = [
   'USDT_ADA',
   'USDT_ADADOWN',
   'USDT_ADAUP',
+  'USDT_ADX',
   'USDT_AGLD',
   'USDT_AION',
   'USDT_AKRO',
@@ -36,6 +51,7 @@ const listOf3CommasUSDTPair = [
   'USDT_ATA',
   'USDT_ATM',
   'USDT_ATOM',
+  'USDT_AUCTION',
   'USDT_AUD',
   'USDT_AUDIO',
   'USDT_AUTO',
@@ -59,6 +75,7 @@ const listOf3CommasUSDTPair = [
   'USDT_BNBDOWN',
   'USDT_BNBUP',
   'USDT_BNT',
+  'USDT_BNX',
   'USDT_BOND',
   'USDT_BTC',
   'USDT_BTCDOWN',
@@ -68,7 +85,7 @@ const listOf3CommasUSDTPair = [
   'USDT_BTS',
   'USDT_BTT',
   'USDT_BURGER',
-  'USDT_BUSD',
+  // 'USDT_BUSD',
   'USDT_BZRX',
   'USDT_C98',
   'USDT_CAKE',
@@ -90,6 +107,7 @@ const listOf3CommasUSDTPair = [
   'USDT_CTXC',
   'USDT_CVC',
   'USDT_CVP',
+  'USDT_DAR',
   'USDT_DASH',
   'USDT_DATA',
   'USDT_DCR',
@@ -237,6 +255,7 @@ const listOf3CommasUSDTPair = [
   'USDT_REN',
   'USDT_REP',
   'USDT_REQ',
+  'USDT_RGT',
   'USDT_RIF',
   'USDT_RLC',
   'USDT_ROSE',
@@ -281,7 +300,7 @@ const listOf3CommasUSDTPair = [
   'USDT_TRX',
   'USDT_TRXDOWN',
   'USDT_TRXUP',
-  'USDT_TUSD',
+  // 'USDT_TUSD',
   'USDT_TVK',
   'USDT_TWT',
   'USDT_UMA',
@@ -289,8 +308,8 @@ const listOf3CommasUSDTPair = [
   'USDT_UNI',
   'USDT_UNIDOWN',
   'USDT_UNIUP',
-  'USDT_USDC',
-  'USDT_USDP',
+  // 'USDT_USDC',
+  // 'USDT_USDP',
   'USDT_UTK',
   'USDT_VET',
   'USDT_VIDT',
@@ -330,7 +349,9 @@ const listOf3CommasUSDTPair = [
 ];
 
 module.exports = {
-  tradingViewCustomSignalConfig,
+  tradingViewCustomStartDealSignalConfig,
+  tradingViewCustomStartBotSignalConfig,
+  tradingViewCustomStopBotSignalConfig,
   lunarCrashConfig,
   listOf3CommasUSDTPair,
 };
