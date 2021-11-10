@@ -422,10 +422,13 @@ const lunarCrashDataCall = async () => {
     if (lunarCrashToken) {
       // startBotsUsingLunarCrashAltRank(lunarCrashToken);
       // startMultiPairBotsUsingLunarCrashAltRank(6551158, lunarCrashToken);
-      startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real'); // Bull Bot
-      startMultiPairBotsUsingLunarCrashGalaxyScore(6714616, lunarCrashToken, 'real'); // Safira Bot
+      // startMultiPairBotsUsingLunarCrashGalaxyScore(6551158, lunarCrashToken, 'real'); // Bull Bot
+      // startMultiPairBotsUsingLunarCrashGalaxyScore(6714616, lunarCrashToken, 'real'); // Safira Bot
       // startMultiPairBotsUsingLunarCrashGalaxyScore(6591241, lunarCrashToken, 'paper');
       // startAndStopBotsUsingLunarCrashGalaxyScore('paper', lunarCrashToken);
+      // 6875104
+      startMultiPairBotsUsingLunarCrashGalaxyScore(6875104, lunarCrashToken, 'real'); // Bull Bot
+
     }
     // startAndStopBotsUsingLunarCrashGalaxyScore('paper', null);
   } catch (error) {
