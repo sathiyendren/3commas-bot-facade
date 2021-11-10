@@ -19,7 +19,7 @@ const updateBot = catchAsync(async (req, res) => {
     // eslint-disable-next-line no-undef
     isReadyToBuy: isReadyToBuy === 1,
     // eslint-disable-next-line no-undef
-    isReadyToSell: isReadyToSell === 1,
+    // isReadyToSell: isReadyToSell === 1,
   };
   const updatedBot = await botService.updateBot(bot.id, botParams);
   res.send(updatedBot);
