@@ -13,7 +13,7 @@ const updateBot = catchAsync(async (req, res) => {
   const bot = await botService.getBotByPair(pair);
   const botParams = {
     pair: bot.pair,
-    isReadyToBuy: req.body.isReadyToBuy,
+    isReadyToBuy: req.body.isReadyToBuy === 1,
   };
   const updatedBot = await botService.updateBot(bot.id, botParams);
   res.send(updatedBot);
