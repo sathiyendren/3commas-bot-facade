@@ -11,7 +11,11 @@ const updateBot = catchAsync(async (req, res) => {
     pair = `USDT_${pairArray[0]}`;
   }
   const bot = await botService.getBotByPair(pair);
-  const updatedBot = await botService.updateBot(bot.id, req.body);
+  const botParams = {
+    pair: bot.pair,
+    isReadyToBuy: req.body.isReadyToBuy,
+  };
+  const updatedBot = await botService.updateBot(bot.id, botParams);
   res.send(updatedBot);
 });
 
